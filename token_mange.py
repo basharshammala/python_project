@@ -3,9 +3,9 @@ import json
 import os
 
 TOKEN_FILE = "token.json"
-app_id = "1084712410505235"
-app_secret = "45e3afc8d75b1d0802390e499e0a2982"
-short_lived_token = "EAAPaiknpYBMBPY17c2BjVlN4YmCMr0vaCzZCluA62hRIaFGBGUzR30WdGar4LfBAbLJxZC2WX2cQXYDvXTUMF4MY9xppZBkHQEMW1BAYXpJCxTrbN8CF6zxF1dRezW5zhUwZBwmApZAkjXV6KD2en0JEQlZAflXwP9avvTGWw84Bw2VQzwBlzT4dDRDkZCU1vpniUHyVhPqvF4ZCjkc3Hxf41kZBBNaQTNZAQ1w34BKOMRzNpZAPYsd"
+app_id = "3219671508186524"
+app_secret = "5d26dfced24f032fb68de028be9ed0e9"
+short_lived_token = "EAAtwRjCJ9ZAwBPdPmxcIzGqTHqMA4F8z7vZA443lOyUKxceaeQwZCq628VEoiNNrJ31y5aGxZBstzG2DzZC69o4RZCcFH8ZAn2TbCGqFzQW02DGZArbgaWruND1Gs1XZC35O9ZCa7zZCY1BFVleeJ9iU4lx4sDXKi6K1ZCZBAqJuZCwfftIm4qV0dkhVx8fJwd4YbWoLhePJ6LZB90IkeaLWTjZBQgFiZAsIyytLd3esW"
 
 def save_token(token):
     with open(TOKEN_FILE, "w") as f:
