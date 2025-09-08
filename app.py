@@ -62,6 +62,15 @@ else:
         st.info("No business linked, cannot fetch ad accounts directly.")
 
 @st.cache_data
+def get_currancy (ad_account_id,access_token=token) : 
+     url = f"https://graph.facebook.com/v21.0/{ad_account_id}"
+     params = {
+    "fields": "currency",
+    "access_token": access_token
+    }
+     return requests.get(url, params=params)
+
+@st.cache_data
 def get_insights(ad_account_id, access_token=token):
      url = f"https://graph.facebook.com/v21.0/{ad_account_id}/insights"
      params = {
@@ -70,6 +79,8 @@ def get_insights(ad_account_id, access_token=token):
     "access_token": access_token
     }
      return requests.get(url, params=params)
+currancy = get_currancy(ad.get("id"))
+st.write(f"the currancy for this account is :  {currancy.json()['currency']}")
 insigths = get_insights( ad.get("id"))
 data =  insigths.json()
 # st.write(data['data'])
