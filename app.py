@@ -117,22 +117,22 @@ if bussiness_account :
         with col2:
             st.metric(label="🖱️ Clicks", value=clicks)
         with col3:
-            st.metric(label="💰 Spend", value=spend)
+            st.metric(label="💰 Spend", value=f"{currancy['currency']} {spend}")
         with col4:
             st.metric(label="🛒 Purchases", value=purchase)
         
         col5, col6, col7, col8 = st.columns(4)
         with col5:
-            st.metric(label="💵 Purchase Value", value=purchase_value)
+            st.metric(label="💵 Purchase Value", value=f"{currancy['currency']} {purchase_value}")
 
         with col6:
             st.metric(label="📈 ROAS", value=roas)
 
         with col7:
-            st.metric(label="🖱️ CPC", value=f"${cpc}")
+            st.metric(label="🖱️ CPC", value=f"{currancy['currency']} {cpc}")
 
         with col8:
-            st.metric(label="🎯 CPA", value=f"${cpa}")
+            st.metric(label="🎯 CPA", value=f"{currancy['currency']} {cpa}")
 
         
 
