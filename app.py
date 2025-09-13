@@ -113,26 +113,26 @@ if bussiness_account :
             cpc = 0.0
         col1, col2, col3, col4 = st.columns(4)
         with col1 : 
-             st.metric(label="👀 Impressions", value=impressions)
+             st.metric(label="👀 Impressions", value=f"{float(impressions):,}")
         with col2:
-            st.metric(label="🖱️ Clicks", value=clicks)
+            st.metric(label="🖱️ Clicks", value=f"{float(clicks):,}")
         with col3:
-            st.metric(label="💰 Spend", value=f"{currancy['currency']} {spend}")
+            st.metric(label="💰 Spend", value=f"{currancy['currency']} {float(spend):,}")
         with col4:
-            st.metric(label="🛒 Purchases", value=purchase)
+            st.metric(label="🛒 Purchases", value=f"{float(purchase):,}")
         
         col5, col6, col7, col8 = st.columns(4)
         with col5:
-            st.metric(label="💵 Purchase Value", value=f"{currancy['currency']} {purchase_value}")
+            st.metric(label="💵 Purchase Value", value=f"{currancy['currency']} {float(purchase_value):,}")
 
         with col6:
-            st.metric(label="📈 ROAS", value=roas)
+            st.metric(label="📈 ROAS", value=f"{roas:,}")
 
         with col7:
-            st.metric(label="🖱️ CPC", value=f"{currancy['currency']} {cpc}")
+            st.metric(label="🖱️ CPC", value=f"{currancy['currency']} {cpc:,}")
 
         with col8:
-            st.metric(label="🎯 CPA", value=f"{currancy['currency']} {cpa}")
+            st.metric(label="🎯 CPA", value=f"{currancy['currency']} {cpa:,}")
 
         
 
