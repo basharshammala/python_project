@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from token_mange import load_token, generate_long_lived_token
 import matplotlib.pyplot  as plt
+import pandas as pd 
 
 # app config 
 st.set_page_config(page_title='FacebookDashboard', page_icon="🌍", layout="wide")
@@ -45,8 +46,19 @@ def get_adaccounts(business_id, token):
 def get_insights(ad_account_id, access_token=token):
      url = f"https://graph.facebook.com/v21.0/{ad_account_id}/insights"
      params = {
-    "fields": "impressions,reach,spend,clicks,actions,action_values",
-    "date_preset": "last_year",  
+    "fields": "date_start,date_stop,impressions,reach,spend,clicks,actions,action_values",
+    "date_preset": "last_year", 
+    "access_token": access_token
+    }
+     return requests.get(url, params=params).json()
+
+@st.cache_data
+def get_date(ad_account_id, access_token=token):
+     url = f"https://graph.facebook.com/v21.0/{ad_account_id}/insights"
+     params = {
+    "fields": "date_start,date_stop,spend,actions,action_values",
+    "date_preset": "last_year", 
+    "time_increment": 1, 
     "access_token": access_token
     }
      return requests.get(url, params=params).json()
@@ -184,6 +196,8 @@ if bussiness_account :
             st.metric(label="🎯 CPA", value=f"{cpa:,} {currancy['currency']}")
         
         # st.json(get_campaigns(ad_account_info['id']))
+        st.markdown("##")
+
         id = get_campaigns(ad_account_info['id'])
         
         # st.json(get_campaigns_info(id['data'][5]['id']))
@@ -201,6 +215,38 @@ if bussiness_account :
                 ax.set_xlim(0, max([c["purchase_value"] for c in get_top5_purchase_campaigns(ad_account_info['id'])]) * 1.1)  # مقياس موحد
                 ax.axis('off')  # إزالة المحاور
                 st.pyplot(fig)
+        
+        # st.write(get_date(ad_account_info['id']).get("data", []))
+
+        for date in get_date(ad_account_info['id']).get("data", []) : 
+            pass 
+        # st.json(get_date(ad_account_info['id']))
+        df_list = []
+        for item in get_date(ad_account_info['id']).get("data", []):
+            date = item["date_start"]
+            spend = float(item.get("spend", 0))
+            pv = 0
+            for val in item.get("action_values", []):
+                if val.get("action_type") == "purchase":
+                    pv = float(val.get("value", 0))
+    
+            df_list.append({"date": date, "spend": spend, "purchase": pv})
+        # st.write(df_list)
+        df = pd.DataFrame(df_list)
+        df["date"] = pd.to_datetime(df["date"])
+        df.sort_values("date", inplace=True)
+        fig, ax = plt.subplots(figsize=(12,6))
+        ax.plot(df["date"], df["spend"], marker='o', label="(Spend)")
+        ax.plot(df["date"], df["purchase"], marker='o', label="(Purchase Value)")
+        ax.set_xlabel("date")
+        ax.set_ylabel("value")
+        # ax.set_title("الصرف والشراء عبر الزمن")
+        ax.legend()
+        plt.xticks(rotation=45)
+        plt.grid(True)
+        st.pyplot(fig)
+
+        
 
         
 
