@@ -50,6 +50,28 @@ def get_insights(ad_account_id, access_token=token):
     }
      return requests.get(url, params=params).json()
 
+# get the campaigns
+@st.cache_data
+def get_campaigns(ad_account_id, access_token=token):
+     url = f"https://graph.facebook.com/v21.0/{ad_account_id}/campaigns"
+     params = {
+    "fields": "name,insights",
+    "date_preset": "last_year",  
+    "access_token": access_token
+    }
+     return requests.get(url, params=params).json()
+
+# get the info about the campaigns
+@st.cache_data
+def get_campaigns_info(campaign_id,access_token=token):
+    url = f"https://graph.facebook.com/v21.0/{campaign_id}/insights"
+    params = {
+    "fields": "spend,clicks,impressions,actions,action_values",
+    "date_preset": "last_year",  
+    "access_token": access_token
+    }
+    return requests.get(url, params=params).json()
+
 # get the currancy 
 @st.cache_data
 def get_currancy (ad_account_id,access_token=token) : 
@@ -117,22 +139,27 @@ if bussiness_account :
         with col2:
             st.metric(label="🖱️ Clicks", value=f"{float(clicks):,}")
         with col3:
-            st.metric(label="💰 Spend", value=f"{currancy['currency']} {float(spend):,}")
+            st.metric(label="💰 Spend", value=f"{float(spend):,} {currancy['currency']}")
         with col4:
             st.metric(label="🛒 Purchases", value=f"{float(purchase):,}")
         
         col5, col6, col7, col8 = st.columns(4)
         with col5:
-            st.metric(label="💵 Purchase Value", value=f"{currancy['currency']} {float(purchase_value):,}")
+            st.metric(label="💵 Purchase Value", value=f"{float(purchase_value):,} {currancy['currency']}")
 
         with col6:
             st.metric(label="📈 ROAS", value=f"{roas:,}")
 
         with col7:
-            st.metric(label="🖱️ CPC", value=f"{currancy['currency']} {cpc:,}")
+            st.metric(label="🖱️ CPC", value=f"{cpc:,} {currancy['currency']}")
 
         with col8:
-            st.metric(label="🎯 CPA", value=f"{currancy['currency']} {cpa:,}")
+            st.metric(label="🎯 CPA", value=f"{cpa:,} {currancy['currency']}")
+        
+        st.json(get_campaigns(ad_account_info['id']))
+        id = get_campaigns(ad_account_info['id'])
+        
+        st.json(get_campaigns_info(id['data'][5]['id']))
 
         
 
