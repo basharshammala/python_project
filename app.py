@@ -2,7 +2,10 @@ import streamlit as st
 import requests
 from token_mange import load_token, generate_long_lived_token
 
-st.title("Facebook Dashboard")
+# app config 
+st.set_page_config(page_title='FacebookDashboard', page_icon="🌍", layout="wide")
+st.subheader("🌍 Facebook Dashboard")
+# st.markdown("##")
 
 
 token = load_token()
@@ -62,10 +65,10 @@ def get_currancy (ad_account_id,access_token=token) :
 page_name =  [ page['name'] for page in get_pages()['data'] ]
 selected_page = st.selectbox("Select the page:", page_name)
 page_info = next((page for page in get_pages()['data'] if page['name'] == selected_page), None)
-if page_info : 
-     st.write(f'PageName: {page_info['name']}')
-     st.write(f'PageName: {page_info['id']}')
-     st.write(f'PageName: {page_info['access_token']}')
+# if page_info : 
+#      st.write(f'PageName: {page_info['name']}')
+#      st.write(f'PageName: {page_info['id']}')
+#      st.write(f'PageName: {page_info['access_token']}')
 
 # get bussines account
 # st.json(get_bussines_account(page_info['id'], page_info['access_token']))
@@ -84,7 +87,57 @@ if bussiness_account :
         ad_account_info = next((ad for ad in ad_account_list if ad['name'] == selected_ad_account), None)
         currancy  = get_currancy(ad_account_info['id'])
         st.write(f"the currancy for this account is : {currancy['currency']}")
-        st.json(get_insights(ad_account_info['id']))
+        # the data for ad_account
+        impressions = get_insights(ad_account_info['id'])['data'][0]['impressions']
+        spend = get_insights(ad_account_info['id'])['data'][0]['spend']
+        clicks = get_insights(ad_account_info['id'])['data'][0]['clicks']
+        purchase = get_insights(ad_account_info['id'])['data'][0]['actions'][2]['value']
+        omni_add_to_cart = get_insights(ad_account_info['id'])['data'][0]['actions'][3]['value'] 
+        purchase_value = get_insights(ad_account_info['id'])['data'][0]['action_values'][0]['value']
+        # roas  =round(float(purchase_value)/float(spend), 3 ) 
+        # cpc = round(float(spend)/ float(clicks), 3)
+        if float(spend) > 0:
+            roas = round(float(purchase_value) / float(spend), 3)
+        else:
+            roas = 0.0   
+
+        if float(purchase) > 0 : 
+            cpa = round(float(spend) / float(purchase), 3)  
+        else :
+            cpa = 0.0
+
+        
+        if float(clicks) > 0:
+            cpc = round(float(spend) / float(clicks), 3)
+        else:
+            cpc = 0.0
+        col1, col2, col3, col4 = st.columns(4)
+        with col1 : 
+             st.metric(label="👀 Impressions", value=impressions)
+        with col2:
+            st.metric(label="🖱️ Clicks", value=clicks)
+        with col3:
+            st.metric(label="💰 Spend", value=spend)
+        with col4:
+            st.metric(label="🛒 Purchases", value=purchase)
+        
+        col5, col6, col7, col8 = st.columns(4)
+        with col5:
+            st.metric(label="💵 Purchase Value", value=purchase_value)
+
+        with col6:
+            st.metric(label="📈 ROAS", value=roas)
+
+        with col7:
+            st.metric(label="🖱️ CPC", value=f"${cpc}")
+
+        with col8:
+            st.metric(label="🎯 CPA", value=f"${cpa}")
+
+        
+
+
+        
 
 
     else :
@@ -92,50 +145,8 @@ if bussiness_account :
          
     
          
-
 else :
      st.write("there is no a bussiness account..........")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# second get the adaccount info 
-# page_details = get_adaccounts(page_info["id"], page_info["access_token"])    
-# business_id = page_details.get("business", {}).get("id")
-# if business_id:
-#     adaccounts_json = `get_business_adaccounts`(business_id, token) 
-#     adaccounts_list = adaccounts_json.get("data", [])
-#     for ad in adaccounts_list:
-#         ad_account = ad.get("id")
-#         st.write("account_id:", ad.get("id"))
-#     currancy = get_currancy(ad.get("id"))
-#     st.write(f"the currancy for this account is :  {currancy.json()['currency']}")
-#     insigths = get_insights( ad.get("id"))
-#     data =  insigths.json()
-#     # st.write(data['data'])
-#     st.json(data['data'][0])
-
-
-# else:
-#         st.info("No business linked, cannot fetch ad accounts directly.")
-
-
-
-
-
-
-
 
 
 
