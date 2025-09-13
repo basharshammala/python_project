@@ -1,6 +1,7 @@
 import streamlit as st 
 import requests
 from token_mange import load_token, generate_long_lived_token
+import matplotlib.pyplot  as plt
 
 # app config 
 st.set_page_config(page_title='FacebookDashboard', page_icon="🌍", layout="wide")
@@ -71,6 +72,32 @@ def get_campaigns_info(campaign_id,access_token=token):
     "access_token": access_token
     }
     return requests.get(url, params=params).json()
+
+@st.cache_data
+def get_top5_purchase_campaigns(ad_account_id, access_token=token):
+    # جلب جميع الحملات
+    campaigns = get_campaigns(ad_account_id, access_token)["data"]
+    
+    campaigns_list = []
+    
+    for campaign in campaigns:
+        campaign_id = campaign["id"]
+        insights = get_campaigns_info(campaign_id, access_token)
+        if "data" in insights and len(insights["data"]) > 0:
+            actions_values = insights["data"][0].get("action_values", [])
+            # البحث عن قيمة الشراء purchase
+            purchase_value = 0
+            for item in actions_values:
+                if item.get("action_type") == "purchase":
+                    purchase_value = float(item.get("value", 0))
+            campaigns_list.append({
+                "name": campaign.get("name", ""),
+                "purchase_value": purchase_value
+            })
+    
+    # ترتيب الحملات حسب قيمة الشراء واختيار أعلى 5
+    top5 = sorted(campaigns_list, key=lambda x: x["purchase_value"], reverse=True)[:5]
+    return top5
 
 # get the currancy 
 @st.cache_data
@@ -156,10 +183,24 @@ if bussiness_account :
         with col8:
             st.metric(label="🎯 CPA", value=f"{cpa:,} {currancy['currency']}")
         
-        st.json(get_campaigns(ad_account_info['id']))
+        # st.json(get_campaigns(ad_account_info['id']))
         id = get_campaigns(ad_account_info['id'])
         
-        st.json(get_campaigns_info(id['data'][5]['id']))
+        # st.json(get_campaigns_info(id['data'][5]['id']))
+        # st.write(get_top5_purchase_campaigns(ad_account_info['id']))
+        for campaign in get_top5_purchase_campaigns(ad_account_info['id']):
+            col_name, col_value, col_bar = st.columns([2, 1, 5])  # تقسيم الأعمدة
+            with col_name:
+                st.write(campaign["name"])
+            with col_value:
+                st.write(campaign["purchase_value"])
+            with col_bar:
+        # رسم شريطي صغير
+                fig, ax = plt.subplots(figsize=(4, 0.3))  # ارتفاع صغير للـ mini bar
+                ax.barh([0], [campaign["purchase_value"]], color='skyblue')
+                ax.set_xlim(0, max([c["purchase_value"] for c in get_top5_purchase_campaigns(ad_account_info['id'])]) * 1.1)  # مقياس موحد
+                ax.axis('off')  # إزالة المحاور
+                st.pyplot(fig)
 
         
 
