@@ -234,7 +234,7 @@ if bussiness_account :
                         x=[campaign["purchase_value"]],
                         y=[campaign["name"]],
                         orientation='h',
-                        text=[campaign["purchase_value"]],
+                        # text=[campaign["purchase_value"]],
                         width=400,
                         height=50,
                         range_x=[0, max([c["purchase_value"] for c in get_top5_purchase_campaigns(ad_account_info['id'])])*1.1]
