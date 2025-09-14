@@ -5,6 +5,7 @@ from token_mange import load_token, generate_long_lived_token
 import matplotlib.pyplot  as plt
 import pandas as pd 
 import plotly.express as px
+import seaborn as sns
 # app config 
 st.set_page_config(page_title='FacebookDashboard', page_icon="🌍", layout="wide")
 st.subheader("🌍 Facebook Dashboard")
@@ -217,6 +218,7 @@ if bussiness_account :
         st.markdown("##")
         top_col, shape_col =  st.columns([2,1])
         with top_col:
+            st.subheader('Top 5 camp')
             for campaign in get_top5_purchase_campaigns(ad_account_info['id']):
                 col_name, col_value, col_bar = st.columns([2, 1, 5])
 
@@ -239,6 +241,8 @@ if bussiness_account :
                     )
                     fig.update_traces(marker_color='skyblue', textposition='outside')
                     fig.update_layout(
+                        xaxis_title='',  # إزالة عنوان المحور x
+                        yaxis_title='',  
                         xaxis=dict(showticklabels=False),
                         yaxis=dict(showticklabels=False),
                         margin=dict(l=0, r=0, t=0, b=0),
@@ -249,6 +253,7 @@ if bussiness_account :
 # ----------- الرسم الثاني: Spend vs Purchase Value -----------
 
         with shape_col:
+            st.subheader('spend vs purchases')
             df_list = []
             for item in get_date(ad_account_info['id']).get("data", []):
                 date = item["date_start"]
