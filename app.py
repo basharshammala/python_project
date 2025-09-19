@@ -268,6 +268,9 @@ if bussiness_account :
             st.subheader('spend vs purchases')
             # st.json(get_date(ad_account_info['id']))
             df_list = []
+            response = get_date(ad_account_info['id'])
+            st.write(response)
+
             for item in get_date(ad_account_info['id']):
                 date = item["date_start"]
                 spend = float(item.get("spend", 0))
