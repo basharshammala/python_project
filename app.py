@@ -62,12 +62,24 @@ def get_insights(ad_account_id, access_token=token):
 def get_date(ad_account_id, access_token=token):
      url = f"https://graph.facebook.com/v21.0/{ad_account_id}/insights"
      params = {
-    "fields": "date_start,date_stop,spend,actions,action_values",
+    "fields": "date_start,spend,action_values",
     "date_preset": "last_year", 
     "time_increment": 1, 
     "access_token": access_token
     }
-     return requests.get(url, params=params).json()
+     all_data =  []
+     while True:
+         response = requests.get(url, params=params).json()
+         all_data.extend(response.get('data',[]))
+         if "paging" in response and "cursors" in response["paging"]:
+             after_cursor = response["paging"]["cursors"].get("after")
+             if after_cursor:
+                 params["after"] = after_cursor
+         else:
+             break 
+
+        
+     return all_data
 
 # get the campaigns
 @st.cache_data
@@ -254,8 +266,9 @@ if bussiness_account :
 
         with shape_col:
             st.subheader('spend vs purchases')
+            # st.json(get_date(ad_account_info['id']))
             df_list = []
-            for item in get_date(ad_account_info['id']).get("data", []):
+            for item in get_date(ad_account_info['id']):
                 date = item["date_start"]
                 spend = float(item.get("spend", 0))
                 pv = 0
